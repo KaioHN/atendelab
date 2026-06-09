@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Tempo de geração: 02/06/2026 às 01:24
+-- Tempo de geração: 09/06/2026 às 00:00
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -44,6 +44,54 @@ CREATE TABLE `usuarios` (
 INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `perfil`, `status`, `criado_em`) VALUES
 (1, 'Administrador', 'admin@atendelab.com', '$2y$10$J9P2kU2BAMZ3TZcuxTsW4e1D/lka8EocYHzvyoOZmCNcWDQz3RuVC', 'admin', 'ativo', '2026-06-01 23:09:53');
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `pessoas`
+--
+
+CREATE TABLE `pessoas` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `cpf` varchar(14) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `telefone` varchar(20) DEFAULT NULL,
+  `endereco` varchar(255) DEFAULT NULL,
+  `status` enum('ativo','inativo') DEFAULT 'ativo',
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `tipos_atendimento`
+--
+
+CREATE TABLE `tipos_atendimento` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `descricao` text DEFAULT NULL,
+  `status` enum('ativo','inativo') DEFAULT 'ativo',
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `atendimentos`
+--
+
+CREATE TABLE `atendimentos` (
+  `id` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL,
+  `pessoa_id` int(11) NOT NULL,
+  `tipo_atendimento_id` int(11) NOT NULL,
+  `descricao` text DEFAULT NULL,
+  `status` enum('aberto','em_andamento','concluido','cancelado') DEFAULT 'aberto',
+  `data_atendimento` datetime DEFAULT current_timestamp(),
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Índices para tabelas despejadas
 --
@@ -56,6 +104,28 @@ ALTER TABLE `usuarios`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Índices de tabela `pessoas`
+--
+ALTER TABLE `pessoas`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `cpf` (`cpf`);
+
+--
+-- Índices de tabela `tipos_atendimento`
+--
+ALTER TABLE `tipos_atendimento`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Índices de tabela `atendimentos`
+--
+ALTER TABLE `atendimentos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `usuario_id` (`usuario_id`),
+  ADD KEY `pessoa_id` (`pessoa_id`),
+  ADD KEY `tipo_atendimento_id` (`tipo_atendimento_id`);
+
+--
 -- AUTO_INCREMENT para tabelas despejadas
 --
 
@@ -64,6 +134,43 @@ ALTER TABLE `usuarios`
 --
 ALTER TABLE `usuarios`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de tabela `pessoas`
+--
+ALTER TABLE `pessoas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `tipos_atendimento`
+--
+ALTER TABLE `tipos_atendimento`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `atendimentos`
+--
+ALTER TABLE `atendimentos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Restrições para tabelas despejadas
+--
+
+--
+-- Restrições para tabela `atendimentos`
+--
+ALTER TABLE `atendimentos`
+  ADD CONSTRAINT `fk_atendimento_usuario`
+    FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_atendimento_pessoa`
+    FOREIGN KEY (`pessoa_id`) REFERENCES `pessoas` (`id`)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_atendimento_tipo`
+    FOREIGN KEY (`tipo_atendimento_id`) REFERENCES `tipos_atendimento` (`id`)
+    ON DELETE RESTRICT ON UPDATE CASCADE;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

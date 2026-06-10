@@ -1,14 +1,14 @@
 <?php 
     //Carregar Controller responsavel pelos endpoits de user
-    require_once __DIR__ . '/app/Controllers/UsuariosControllers.php'
+    require_once __DIR__ . '/app/Controllers/UsuariosControllers.php';
 
     //Definir Controller e action por query string.
-    $controller = $GET['controller'] ?? 'home';
-    $action = $GET['action'] ?? 'index';
+    $controller = $_GET['controller'] ?? 'home';
+    $action = $_GET['action'] ?? 'index';
 
     //Roteador é simples; Reconhece o Controller como "usuarios"
     if ($controller == 'usuarios'){
-        $usuariosController = new UsuariosControllers();
+        $usuariosController = new UsuariosController();
 
             switch ($action){
                 case ' listar':
@@ -36,6 +36,6 @@
                         break;
             }
     } else {
-        echo '<h1>AtendeLab</h1>';
-        echo '<p>Projeto em execução. Use ?controller=usuarios&action=listar para testar.</p>'
-    }
+            echo '<h1>AtendeLab</h1>';
+            echo '<p>Projeto em execução. Use ?controller=usuarios&action=listar para testar.</p>';
+        }

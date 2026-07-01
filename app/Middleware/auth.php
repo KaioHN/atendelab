@@ -4,6 +4,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+function usuarioAutenticado(): bool{
+    return isset($_SESSION['usuario'])
+        && is_array($_SESSION['usuario']);
+}
+
 function usuarioAutenticacao(): void{
         if (!usuarioAutenticacao()){
             $_SESSION['mensagem'] = 

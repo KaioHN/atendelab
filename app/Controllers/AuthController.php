@@ -29,7 +29,7 @@ class AuthController{
 
     public function entrar(): void{
         if ($_SERVER['REQUEST_METHOD'] !== 'POST'){
-            header('Location: ?controller-auth&action=login');
+            header('Location: ?controller=auth&action=login');
             exit;
         }
 
@@ -41,6 +41,32 @@ class AuthController{
 
             header('Location: ?controller=auth&action=login');
             exit;
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['erro_login'] = 'Informe um e-mail válido.';
+
+            header('Location: ?controller=auth&action=login');
+            exit;
+        }
+
+        $sql = 'SELECT id, nome, email, senha, perfil, status
+                FROM usuarios
+                WHERE email= :email
+                LIMIT 1';
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':email', $email);
+        $stmt->execute();
+
+        $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if(
+            !$usuario
+            || $usuario['status'] !== 'ativo'
+            || !password_verify($senha, $usuario['senha'])
+        ){
+            $_SESSION['erro_login'] = 
         }
     }
 }

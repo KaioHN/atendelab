@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Tempo de geração: 09/06/2026 às 00:00
+-- Tempo de geração: 01/07/2026 às 14:34
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -24,25 +24,35 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `usuarios`
+-- Estrutura para tabela `atendimentos`
 --
 
-CREATE TABLE `usuarios` (
+CREATE TABLE `atendimentos` (
   `id` int(11) NOT NULL,
-  `nome` varchar(100) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `senha` varchar(255) NOT NULL,
-  `perfil` enum('admin','atendente') DEFAULT 'atendente',
-  `status` enum('ativo','inativo') DEFAULT 'ativo',
-  `criado_em` timestamp NOT NULL DEFAULT current_timestamp()
+  `pessoa_id` int(11) DEFAULT NULL,
+  `tipo_atendimento_id` int(11) NOT NULL,
+  `usuario_id` int(11) DEFAULT NULL,
+  `data_atendimento` date NOT NULL DEFAULT curdate(),
+  `hora_atendimento` time NOT NULL DEFAULT curtime(),
+  `descricao` text NOT NULL,
+  `observacao` text DEFAULT NULL,
+  `status` enum('aberto','em_andamento','concluido','inativo') DEFAULT 'aberto',
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `observacao_final` text DEFAULT NULL,
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `usuarios`
+-- Despejando dados para a tabela `atendimentos`
 --
 
-INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `perfil`, `status`, `criado_em`) VALUES
-(1, 'Administrador', 'admin@atendelab.com', '$2y$10$J9P2kU2BAMZ3TZcuxTsW4e1D/lka8EocYHzvyoOZmCNcWDQz3RuVC', 'admin', 'ativo', '2026-06-01 23:09:53');
+INSERT INTO `atendimentos` (`id`, `pessoa_id`, `tipo_atendimento_id`, `usuario_id`, `data_atendimento`, `hora_atendimento`, `descricao`, `observacao`, `status`, `criado_em`, `observacao_final`, `atualizado_em`) VALUES
+(1, 1, 1, 1, '2026-06-15', '19:39:00', 'Aluna com dúvidas sobre como lançar as horas complementares no portal.', '', 'aberto', '2026-06-15 22:39:00', NULL, '2026-07-01 12:33:58'),
+(2, 1, 1, 1, '2026-06-22', '20:51:23', 'Aluna com dúvidas sobre como lançar as horas complementares no portal.', '', 'aberto', '2026-06-22 23:51:23', NULL, '2026-07-01 12:33:58'),
+(3, 4, 2, 1, '2026-06-30', '23:00:00', 'teste', '', 'aberto', '2026-07-01 02:00:52', NULL, '2026-07-01 12:33:58'),
+(4, 2, 4, 1, '2026-06-30', '23:03:00', 'gg', '', 'aberto', '2026-07-01 02:03:14', NULL, '2026-07-01 12:33:58'),
+(5, 2, 3, 1, '2026-06-30', '23:03:00', 'll', '', 'aberto', '2026-07-01 02:03:50', NULL, '2026-07-01 12:33:58'),
+(6, 2, 4, 1, '2026-07-01', '09:30:00', 'teste', '', 'concluido', '2026-07-01 12:32:50', NULL, '2026-07-01 12:33:05');
 
 -- --------------------------------------------------------
 
@@ -53,48 +63,100 @@ INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `perfil`, `status`, `cri
 CREATE TABLE `pessoas` (
   `id` int(11) NOT NULL,
   `nome` varchar(100) NOT NULL,
-  `cpf` varchar(14) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `telefone` varchar(20) DEFAULT NULL,
-  `endereco` varchar(255) DEFAULT NULL,
-  `status` enum('ativo','inativo') DEFAULT 'ativo',
-  `criado_em` timestamp NOT NULL DEFAULT current_timestamp()
+  `email` varchar(100) NOT NULL,
+  `documento` varchar(20) NOT NULL,
+  `telefone` varchar(20) NOT NULL,
+  `curso` varchar(100) NOT NULL,
+  `periodo` varchar(100) NOT NULL,
+  `status` varchar(100) NOT NULL,
+  `observacoes` text DEFAULT NULL,
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `pessoas`
+--
+
+INSERT INTO `pessoas` (`id`, `nome`, `email`, `documento`, `telefone`, `curso`, `periodo`, `status`, `observacoes`, `atualizado_em`) VALUES
+(1, 'Ingrid Silva', 'ingrid.silva@universidade.com', '119.359.105-91', '(47) 99944-6664', 'Ciência da Computação', '6º Período', 'Matriculado', NULL, '2026-06-15 23:05:45'),
+(2, 'Mariana Silva', 'mariana.silva@universidade.com', '119.444.105-91', '(47) 98854-6664', 'Ciência da Computação', '5º Período', 'Matriculado', 'criado dia 22-06', '2026-06-22 23:27:47'),
+(4, 'bia', 'beaeyng14@gmail.com', '12354646', '216456', '15', '5', 'ativo', 'ç', '2026-07-01 01:49:30');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipos_atendimento`
+-- Estrutura para tabela `tipos_atendimentos`
 --
 
-CREATE TABLE `tipos_atendimento` (
+CREATE TABLE `tipos_atendimentos` (
   `id` int(11) NOT NULL,
   `nome` varchar(100) NOT NULL,
-  `descricao` text DEFAULT NULL,
+  `descricao` text NOT NULL,
   `status` enum('ativo','inativo') DEFAULT 'ativo',
-  `criado_em` timestamp NOT NULL DEFAULT current_timestamp()
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `tipos_atendimentos`
+--
+
+INSERT INTO `tipos_atendimentos` (`id`, `nome`, `descricao`, `status`, `atualizado_em`) VALUES
+(1, 'Treinamento de Sistema', 'Atendimento para orientar o uso do portal acadêmico, emissão de documentos e primeiro acesso.', 'ativo', '2026-06-15 23:05:45'),
+(2, 'Revisão de avaliação', 'Solicitações de revisão de provas, trabalhos e atividades avaliativas.', 'ativo', '2026-06-15 23:13:01'),
+(3, 'Apoio à extensão', 'Orientações relacionadas a projetos de extensão e atividades comunitárias.', 'ativo', '2026-06-15 23:13:01'),
+(4, 'Treinamento de Sistema', 'Atendimento para orientar o uso do portal acadêmico, emissão de documentos e primeiro acesso.', 'ativo', '2026-06-22 23:44:03'),
+(5, 'bia', 'teste', 'ativo', '2026-07-01 01:49:55');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `atendimentos`
+-- Estrutura para tabela `usuarios`
 --
 
-CREATE TABLE `atendimentos` (
+CREATE TABLE `usuarios` (
   `id` int(11) NOT NULL,
-  `usuario_id` int(11) NOT NULL,
-  `pessoa_id` int(11) NOT NULL,
-  `tipo_atendimento_id` int(11) NOT NULL,
-  `descricao` text DEFAULT NULL,
-  `status` enum('aberto','em_andamento','concluido','cancelado') DEFAULT 'aberto',
-  `data_atendimento` datetime DEFAULT current_timestamp(),
-  `criado_em` timestamp NOT NULL DEFAULT current_timestamp()
+  `nome` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `senha` varchar(255) NOT NULL,
+  `perfil` enum('admin','aluno','atendente') DEFAULT 'atendente',
+  `status` enum('ativo','inativo') DEFAULT 'ativo',
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `usuarios`
+--
+
+INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `perfil`, `status`, `criado_em`, `atualizado_em`) VALUES
+(1, 'Administrador', 'admin@atendelab.com', '$2y$10$LmWgNNCu8sxyR5Jy7qvbvOVlpEHzpu.Xvifi5FS/u21v2C40g2o9C', 'admin', 'ativo', '2026-06-15 22:39:00', '2026-06-15 23:05:45');
 
 --
 -- Índices para tabelas despejadas
 --
+
+--
+-- Índices de tabela `atendimentos`
+--
+ALTER TABLE `atendimentos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_atendimentos_pessoas` (`pessoa_id`),
+  ADD KEY `fk_atendimentos_tipos` (`tipo_atendimento_id`),
+  ADD KEY `fk_atendimentos_usuarios` (`usuario_id`);
+
+--
+-- Índices de tabela `pessoas`
+--
+ALTER TABLE `pessoas`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `documento` (`documento`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Índices de tabela `tipos_atendimentos`
+--
+ALTER TABLE `tipos_atendimentos`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Índices de tabela `usuarios`
@@ -104,30 +166,26 @@ ALTER TABLE `usuarios`
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Índices de tabela `pessoas`
---
-ALTER TABLE `pessoas`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `cpf` (`cpf`);
-
---
--- Índices de tabela `tipos_atendimento`
---
-ALTER TABLE `tipos_atendimento`
-  ADD PRIMARY KEY (`id`);
-
---
--- Índices de tabela `atendimentos`
---
-ALTER TABLE `atendimentos`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `usuario_id` (`usuario_id`),
-  ADD KEY `pessoa_id` (`pessoa_id`),
-  ADD KEY `tipo_atendimento_id` (`tipo_atendimento_id`);
-
---
 -- AUTO_INCREMENT para tabelas despejadas
 --
+
+--
+-- AUTO_INCREMENT de tabela `atendimentos`
+--
+ALTER TABLE `atendimentos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de tabela `pessoas`
+--
+ALTER TABLE `pessoas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de tabela `tipos_atendimentos`
+--
+ALTER TABLE `tipos_atendimentos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`
@@ -136,41 +194,16 @@ ALTER TABLE `usuarios`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT de tabela `pessoas`
---
-ALTER TABLE `pessoas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `tipos_atendimento`
---
-ALTER TABLE `tipos_atendimento`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `atendimentos`
---
-ALTER TABLE `atendimentos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- Restrições para tabelas despejadas
 --
 
 --
--- Restrições para tabela `atendimentos`
+-- Restrições para tabelas `atendimentos`
 --
 ALTER TABLE `atendimentos`
-  ADD CONSTRAINT `fk_atendimento_usuario`
-    FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-    ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_atendimento_pessoa`
-    FOREIGN KEY (`pessoa_id`) REFERENCES `pessoas` (`id`)
-    ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_atendimento_tipo`
-    FOREIGN KEY (`tipo_atendimento_id`) REFERENCES `tipos_atendimento` (`id`)
-    ON DELETE RESTRICT ON UPDATE CASCADE;
-
+  ADD CONSTRAINT `fk_atendimentos_pessoas` FOREIGN KEY (`pessoa_id`) REFERENCES `pessoas` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_atendimentos_tipos` FOREIGN KEY (`tipo_atendimento_id`) REFERENCES `tipos_atendimentos` (`id`),
+  ADD CONSTRAINT `fk_atendimentos_usuarios` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

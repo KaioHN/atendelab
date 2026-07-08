@@ -1,0 +1,26 @@
+meta {
+  name: Excluir Pessoas
+  type: http
+  seq: 9
+}
+
+post {
+  url: http://localhost/atendelab/public/?controller=pessoas&action=excluir&id=2
+  body: none
+  auth: inherit
+}
+
+params:query {
+  controller: pessoas
+  action: excluir
+  id: 2
+}
+
+headers {
+  Accept: application/json
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
